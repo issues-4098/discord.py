@@ -351,7 +351,7 @@ class Role(Hashable):
         mentionable: bool = MISSING,
         position: int = MISSING,
         reason: Optional[str] = MISSING,
-    ) -> Optional[Role]:
+    ) -> None:
         """|coro|
 
         Edits the role.
@@ -363,9 +363,6 @@ class Role(Hashable):
 
         .. versionchanged:: 1.4
             Can now pass ``int`` to ``colour`` keyword-only parameter.
-
-        .. versionchanged:: 2.0
-            Edits are no longer in-place, the newly edited role is returned instead.
 
         Parameters
         -----------
@@ -394,14 +391,11 @@ class Role(Hashable):
         InvalidArgument
             An invalid position was given or the default
             role was asked to be moved.
-
-        Returns
-        --------
-        :class:`Role`
-            The newly edited role.
         """
+
         if position is not MISSING:
             await self._move(position, reason=reason)
+            self.position = position
 
         payload: Dict[str, Any] = {}
         if color is not MISSING:
@@ -426,7 +420,7 @@ class Role(Hashable):
             payload['mentionable'] = mentionable
 
         data = await self._state.http.edit_role(self.guild.id, self.id, reason=reason, **payload)
-        return Role(guild=self.guild, data=data, state=self._state)
+        self._update(data)
 
     async def delete(self, *, reason: Optional[str] = None) -> None:
         """|coro|

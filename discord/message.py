@@ -1157,7 +1157,7 @@ class Message(Hashable):
         delete_after: Optional[float] = ...,
         allowed_mentions: Optional[AllowedMentions] = ...,
         view: Optional[View] = ...,
-    ) -> Message:
+    ) -> None:
         ...
 
     @overload
@@ -1171,7 +1171,7 @@ class Message(Hashable):
         delete_after: Optional[float] = ...,
         allowed_mentions: Optional[AllowedMentions] = ...,
         view: Optional[View] = ...,
-    ) -> Message:
+    ) -> None:
         ...
 
     async def edit(
@@ -1184,7 +1184,7 @@ class Message(Hashable):
         delete_after: Optional[float] = None,
         allowed_mentions: Optional[AllowedMentions] = MISSING,
         view: Optional[View] = MISSING,
-    ) -> Message:
+    ) -> None:
         """|coro|
 
         Edits the message.
@@ -1286,16 +1286,15 @@ class Message(Hashable):
             else:
                 payload['components'] = []
 
-        data = await self._state.http.edit_message(self.channel.id, self.id, **payload)
-        message = Message(state=self._state, channel=self.channel, data=data)
+        if payload:
+            data = await self._state.http.edit_message(self.channel.id, self.id, **payload)
+            self._update(data)
 
         if view and not view.is_finished():
             self._state.store_view(view, self.id)
 
         if delete_after is not None:
             await self.delete(delay=delete_after)
-
-        return message
 
     async def publish(self) -> None:
         """|coro|

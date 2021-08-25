@@ -276,11 +276,11 @@ class TextChannel(discord.abc.Messageable, discord.abc.GuildChannel, Hashable):
         default_auto_archive_duration: ThreadArchiveDuration = ...,
         type: ChannelType = ...,
         overwrites: Mapping[Union[Role, Member, Snowflake], PermissionOverwrite] = ...,
-    ) -> Optional[TextChannel]:
+    ) -> None:
         ...
 
     @overload
-    async def edit(self) -> Optional[TextChannel]:
+    async def edit(self) -> None:
         ...
 
     async def edit(self, *, reason=None, **options):
@@ -296,9 +296,6 @@ class TextChannel(discord.abc.Messageable, discord.abc.GuildChannel, Hashable):
 
         .. versionchanged:: 1.4
             The ``type`` keyword-only parameter was added.
-
-        .. versionchanged:: 2.0
-            Edits are no longer in-place, the newly edited channel is returned instead.
 
         Parameters
         ----------
@@ -341,18 +338,8 @@ class TextChannel(discord.abc.Messageable, discord.abc.GuildChannel, Hashable):
             You do not have permissions to edit the channel.
         HTTPException
             Editing the channel failed.
-
-        Returns
-        --------
-        Optional[:class:`.TextChannel`]
-            The newly edited text channel. If the edit was only positional
-            then ``None`` is returned instead.
         """
-
-        payload = await self._edit(options, reason=reason)
-        if payload is not None:
-            # the payload will always be the proper channel payload
-            return self.__class__(state=self._state, guild=self.guild, data=payload)  # type: ignore
+        await self._edit(options, reason=reason)
 
     @utils.copy_doc(discord.abc.GuildChannel.clone)
     async def clone(self, *, name: Optional[str] = None, reason: Optional[str] = None) -> TextChannel:
@@ -971,11 +958,11 @@ class VoiceChannel(VocalGuildChannel):
         rtc_region: Optional[VoiceRegion] = ...,
         video_quality_mode: VideoQualityMode = ...,
         reason: Optional[str] = ...,
-    ) -> Optional[VoiceChannel]:
+    ) -> None:
         ...
 
     @overload
-    async def edit(self) -> Optional[VoiceChannel]:
+    async def edit(self) -> None:
         ...
 
     async def edit(self, *, reason=None, **options):
@@ -988,9 +975,6 @@ class VoiceChannel(VocalGuildChannel):
 
         .. versionchanged:: 1.3
             The ``overwrites`` keyword-only parameter was added.
-
-        .. versionchanged:: 2.0
-            Edits are no longer in-place, the newly edited channel is returned instead.
 
         Parameters
         ----------
@@ -1031,18 +1015,9 @@ class VoiceChannel(VocalGuildChannel):
             You do not have permissions to edit the channel.
         HTTPException
             Editing the channel failed.
-
-        Returns
-        --------
-        Optional[:class:`.VoiceChannel`]
-            The newly edited voice channel. If the edit was only positional
-            then ``None`` is returned instead.
         """
 
-        payload = await self._edit(options, reason=reason)
-        if payload is not None:
-            # the payload will always be the proper channel payload
-            return self.__class__(state=self._state, guild=self.guild, data=payload)  # type: ignore
+        await self._edit(options, reason=reason)
 
 
 class StageChannel(VocalGuildChannel):
@@ -1250,11 +1225,11 @@ class StageChannel(VocalGuildChannel):
         rtc_region: Optional[VoiceRegion] = ...,
         video_quality_mode: VideoQualityMode = ...,
         reason: Optional[str] = ...,
-    ) -> Optional[StageChannel]:
+    ) -> None:
         ...
 
     @overload
-    async def edit(self) -> Optional[StageChannel]:
+    async def edit(self) -> None:
         ...
 
     async def edit(self, *, reason=None, **options):
@@ -1267,9 +1242,6 @@ class StageChannel(VocalGuildChannel):
 
         .. versionchanged:: 2.0
             The ``topic`` parameter must now be set via :attr:`create_instance`.
-
-        .. versionchanged:: 2.0
-            Edits are no longer in-place, the newly edited channel is returned instead.
 
         Parameters
         ----------
@@ -1304,18 +1276,9 @@ class StageChannel(VocalGuildChannel):
             You do not have permissions to edit the channel.
         HTTPException
             Editing the channel failed.
-
-        Returns
-        --------
-        Optional[:class:`.StageChannel`]
-            The newly edited stage channel. If the edit was only positional
-            then ``None`` is returned instead.
         """
 
-        payload = await self._edit(options, reason=reason)
-        if payload is not None:
-            # the payload will always be the proper channel payload
-            return self.__class__(state=self._state, guild=self.guild, data=payload)  # type: ignore
+        await self._edit(options, reason=reason)
 
 
 class CategoryChannel(discord.abc.GuildChannel, Hashable):
@@ -1404,11 +1367,11 @@ class CategoryChannel(discord.abc.GuildChannel, Hashable):
         nsfw: bool = ...,
         overwrites: Mapping[Union[Role, Member], PermissionOverwrite] = ...,
         reason: Optional[str] = ...,
-    ) -> Optional[CategoryChannel]:
+    ) -> None:
         ...
 
     @overload
-    async def edit(self) -> Optional[CategoryChannel]:
+    async def edit(self) -> None:
         ...
 
     async def edit(self, *, reason=None, **options):
@@ -1421,9 +1384,6 @@ class CategoryChannel(discord.abc.GuildChannel, Hashable):
 
         .. versionchanged:: 1.3
             The ``overwrites`` keyword-only parameter was added.
-
-        .. versionchanged:: 2.0
-            Edits are no longer in-place, the newly edited channel is returned instead.
 
         Parameters
         ----------
@@ -1447,18 +1407,9 @@ class CategoryChannel(discord.abc.GuildChannel, Hashable):
             You do not have permissions to edit the category.
         HTTPException
             Editing the category failed.
-
-        Returns
-        --------
-        Optional[:class:`.CategoryChannel`]
-            The newly edited category channel. If the edit was only positional
-            then ``None`` is returned instead.
         """
 
-        payload = await self._edit(options, reason=reason)
-        if payload is not None:
-            # the payload will always be the proper channel payload
-            return self.__class__(state=self._state, guild=self.guild, data=payload)  # type: ignore
+        await self._edit(options=options, reason=reason)
 
     @utils.copy_doc(discord.abc.GuildChannel.move)
     async def move(self, **kwargs):
@@ -1648,11 +1599,11 @@ class StoreChannel(discord.abc.GuildChannel, Hashable):
         category: Optional[CategoryChannel],
         reason: Optional[str],
         overwrites: Mapping[Union[Role, Member], PermissionOverwrite],
-    ) -> Optional[StoreChannel]:
+    ) -> None:
         ...
 
     @overload
-    async def edit(self) -> Optional[StoreChannel]:
+    async def edit(self) -> None:
         ...
 
     async def edit(self, *, reason=None, **options):
@@ -1662,9 +1613,6 @@ class StoreChannel(discord.abc.GuildChannel, Hashable):
 
         You must have the :attr:`~Permissions.manage_channels` permission to
         use this.
-
-        .. versionchanged:: 2.0
-            Edits are no longer in-place, the newly edited channel is returned instead.
 
         Parameters
         ----------
@@ -1697,18 +1645,8 @@ class StoreChannel(discord.abc.GuildChannel, Hashable):
             You do not have permissions to edit the channel.
         HTTPException
             Editing the channel failed.
-
-        Returns
-        --------
-        Optional[:class:`.StoreChannel`]
-            The newly edited store channel. If the edit was only positional
-            then ``None`` is returned instead.
         """
-
-        payload = await self._edit(options, reason=reason)
-        if payload is not None:
-            # the payload will always be the proper channel payload
-            return self.__class__(state=self._state, guild=self.guild, data=payload)  # type: ignore
+        await self._edit(options, reason=reason)
 
 
 DMC = TypeVar('DMC', bound='DMChannel')

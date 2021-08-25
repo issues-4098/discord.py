@@ -206,7 +206,7 @@ class Template:
         data = await self._state.http.create_from_template(self.code, name, region_value, icon)
         return Guild(data=data, state=self._state)
 
-    async def sync(self) -> Template:
+    async def sync(self) -> None:
         """|coro|
 
         Sync the template to the guild's current state.
@@ -216,9 +216,6 @@ class Template:
 
         .. versionadded:: 1.7
 
-        .. versionchanged:: 2.0
-            The template is no longer edited in-place, instead it is returned.
-
         Raises
         -------
         HTTPException
@@ -227,22 +224,17 @@ class Template:
             You don't have permissions to edit the template.
         NotFound
             This template does not exist.
-
-        Returns
-        --------
-        :class:`Template`
-            The newly edited template.
         """
 
         data = await self._state.http.sync_template(self.source_guild.id, self.code)
-        return Template(state=self._state, data=data)
+        self._store(data)
 
     async def edit(
         self,
         *,
         name: str = MISSING,
         description: Optional[str] = MISSING,
-    ) -> Template:
+    ) -> None:
         """|coro|
 
         Edit the template metadata.
@@ -251,9 +243,6 @@ class Template:
         source guild to do this.
 
         .. versionadded:: 1.7
-
-        .. versionchanged:: 2.0
-            The template is no longer edited in-place, instead it is returned.
 
         Parameters
         ------------
@@ -270,11 +259,6 @@ class Template:
             You don't have permissions to edit the template.
         NotFound
             This template does not exist.
-
-        Returns
-        --------
-        :class:`Template`
-            The newly edited template.
         """
         payload = {}
 
@@ -284,7 +268,7 @@ class Template:
             payload['description'] = description
 
         data = await self._state.http.edit_template(self.source_guild.id, self.code, payload)
-        return Template(state=self._state, data=data)
+        self._store(data)
 
     async def delete(self) -> None:
         """|coro|

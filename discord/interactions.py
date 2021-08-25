@@ -261,7 +261,7 @@ class Interaction:
         files: List[File] = MISSING,
         view: Optional[View] = MISSING,
         allowed_mentions: Optional[AllowedMentions] = None,
-    ) -> InteractionMessage:
+    ):
         """|coro|
 
         Edits the original interaction response message.
@@ -302,12 +302,7 @@ class Interaction:
         TypeError
             You specified both ``embed`` and ``embeds`` or ``file`` and ``files``
         ValueError
-            The length of ``embeds`` was invalid.
-
-        Returns
-        --------
-        :class:`InteractionMessage`
-            The newly edited message.
+            The length of ``embeds`` was invalid
         """
 
         previous_mentions: Optional[AllowedMentions] = self._state.allowed_mentions
@@ -331,11 +326,8 @@ class Interaction:
             files=params.files,
         )
 
-        # The message channel types should always match
-        message = InteractionMessage(state=self._state, channel=self.channel, data=data)  # type: ignore
         if view and not view.is_finished():
-            self._state.store_view(view, message.id)
-        return message
+            self._state.store_view(view, int(data['id']))
 
     async def delete_original_message(self) -> None:
         """|coro|
@@ -680,7 +672,7 @@ class InteractionMessage(Message):
         files: List[File] = MISSING,
         view: Optional[View] = MISSING,
         allowed_mentions: Optional[AllowedMentions] = None,
-    ) -> InteractionMessage:
+    ):
         """|coro|
 
         Edits the message.
@@ -715,14 +707,9 @@ class InteractionMessage(Message):
         TypeError
             You specified both ``embed`` and ``embeds`` or ``file`` and ``files``
         ValueError
-            The length of ``embeds`` was invalid.
-
-        Returns
-        ---------
-        :class:`InteractionMessage`
-            The newly edited message.
+            The length of ``embeds`` was invalid
         """
-        return await self._state._interaction.edit_original_message(
+        await self._state._interaction.edit_original_message(
             content=content,
             embeds=embeds,
             embed=embed,
